@@ -1,2 +1,6 @@
-# Ignoring all *.o files
+# Ignore all *.o files
 *.o
+# Ignore tmp files
+tmp/
+# Ignore compiled files
+game
