@@ -57,6 +57,12 @@ int main() {
 	draw_alien(&ship);
 	SDL_Flip(screen);
 
+	alien pokemon = create_alien(POKEMON, 337, 600);
+	draw_alien(&pokemon);
+	SDL_Flip(screen);
+
+	fprintf(stderr, "%d\n", has_collided(&ship, &pokemon));
+
 	while (!done) {
 		SDL_Event event;
 		SDL_WaitEvent(&event);

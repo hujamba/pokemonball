@@ -26,3 +26,17 @@ void draw_alien(alien *a) {
 
 	SDL_BlitSurface(aliens[a->type], &src, screen, &dest);
 }
+
+// check collision
+int has_collided(alien *a, alien *b) {
+	int ax = a->x + aliens[a->type]->w / 2;
+	int ay = a->y + aliens[a->type]->h / 2;
+
+	int bx = b->x + aliens[b->type]->w / 2;
+	int by = b->y + aliens[b->type]->h / 2;
+
+	int x = (ax - bx);
+	int y = (ay - by);
+
+	return (x * x + y * y < (a->r + b->r) * (a->r + b->r));
+}

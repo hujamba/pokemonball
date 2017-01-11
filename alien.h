@@ -18,4 +18,6 @@ alien create_alien(int type, int x, int y);
 
 void draw_alien(alien *a);
 
+int has_collided(alien *a, alien *b);
+
 #endif
