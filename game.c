@@ -8,11 +8,28 @@
 #include <time.h>
 
 #include "SDL.h"
+#include "alien.h"
 
 // Surfaces 
 SDL_Surface *screen = NULL;
+SDL_Surface *aliens[2] = { NULL, NULL };
 
-void initAll() {
+
+void init_alien_surfaces() {
+	SDL_Surface *img;
+	
+	// ship
+	img = SDL_LoadBMP("img/ship.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 0, 0, 0));
+	aliens[SHIP] = img;
+
+	// pokemon
+	img = SDL_LoadBMP("img/pokemon.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
+	aliens[POKEMON] = img;
+}
+
+void init_all() {
 	// Initialize SDL 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Couldn't initialize SDL:%s\n", SDL_GetError());
@@ -27,14 +44,19 @@ void initAll() {
 		fprintf(stderr, "Couldn't set 1024x768 video mode: %s\n", SDL_GetError());
 		exit(2);
 	}
-
 	SDL_WM_SetCaption("Pokemon Ball", NULL); 
+	init_alien_surfaces();
 }
 
 int main() {
 	srand(time(NULL));
-	initAll();
+	init_all();
 	int done = 0;
+	
+	alien ship = create_alien(SHIP, 437, 600);
+	draw_alien(&ship);
+	SDL_Flip(screen);
+
 	while (!done) {
 		SDL_Event event;
 		SDL_WaitEvent(&event);
@@ -48,6 +70,5 @@ int main() {
 			}
 		}
 	}
-	SDL_Flip(screen);
 	return 0;
 }
