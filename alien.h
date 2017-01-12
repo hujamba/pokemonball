@@ -22,4 +22,23 @@ int has_collided(alien *a, alien *b);
 
 void update_alien(alien *a);
 
+void draw_aliens(alien *a, int cnt);
+
+void draw_all();
+
+void swap_aliens(alien *a, alien *b);
+
+/*
+ * Pokemons!
+ */
+int check_collisions_with_pokemons();
+
+void delete_pokemon(int id);
+
+void clean_pokemons();
+
+void generate_pokemon();
+
+void generate_pokemons(int add);
+
 #endif

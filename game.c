@@ -1,5 +1,5 @@
 /**
- * game.c -- main file of game pokemon ball
+ * game.c -- main file of the pokemon ball game
  */
 
 #include <stdio.h>
@@ -17,6 +17,11 @@ const int SCREEN_H = 768;
 // Acceleration of ship
 const int X_ACCELERATION = 1;
 const int Y_ACCELERATION = 1;
+
+int COMPLEXITY = 5;
+
+extern alien ship;
+extern int pokemons_count;
 
 // Surfaces 
 SDL_Surface *screen = NULL;
@@ -74,9 +79,7 @@ int main() {
 	int done = 0;
 	
 	// ship's start
-	alien ship = create_alien(SHIP, 437, 600);
-	draw_alien(&ship);
-	SDL_Flip(screen);
+	ship = create_alien(SHIP, 437, 600);
 
 	while (!done) {
 		SDL_Event event;
@@ -116,11 +119,16 @@ int main() {
 			}
 		}
 		refresh();
-		draw_alien(&ship);
-		if (SDL_Flip(screen) < 0) {
-			fprintf(stderr, "main() | SDL_Flip : %s\n", SDL_GetError());
+		draw_all();
+		if (check_collisions_with_pokemons()) {
+			fprintf(stderr, "YOU DON'T WIN!\n");
+			SDL_Delay(300);
+			exit(1);
 		}
-		SDL_Delay(8);
+		clean_pokemons();
+		if (pokemons_count < COMPLEXITY && rand() < 80000000)
+			generate_pokemon();
+		SDL_Delay(9);
 	}
 	return 0;
 }
