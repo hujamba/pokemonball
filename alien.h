@@ -11,7 +11,7 @@ typedef struct _alien {
 	int x, y;
 	int x_vel, y_vel; // velocity
 	int x_acc, y_acc; // acceleration
-	int r; // radius
+	int r;            // radius
 } alien;
 
 alien create_alien(int type, int x, int y);
@@ -19,5 +19,7 @@ alien create_alien(int type, int x, int y);
 void draw_alien(alien *a);
 
 int has_collided(alien *a, alien *b);
+
+void update_alien(alien *a);
 
 #endif
