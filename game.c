@@ -19,7 +19,7 @@ const int SCREEN_H = 768;
 const int X_ACCELERATION = 1;
 const int Y_ACCELERATION = 1;
 
-int COMPLEXITY = 4;
+int COMPLEXITY = 1;
 int SCORE = 0;
 
 extern alien ship;
@@ -45,7 +45,7 @@ void init_alien_surfaces() {
 
 void init_all() {
 	// Initialize SDL 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
 		fprintf(stderr, "Couldn't initialize SDL:%s\n", SDL_GetError());
 		exit(1);	
 	}
@@ -66,12 +66,18 @@ void init_all() {
 	init_alien_surfaces();
 }
 
+void screen_flip() {
+	if (SDL_Flip(screen) < 0) {
+		fprintf(stderr, "SDL_Flip : %s\n", SDL_GetError());
+		exit(1);
+	}
+}
+
 void refresh() {
 	SDL_Rect dest;
 	
 	dest.x = dest.y = 0; 
 	dest.w = SCREEN_W, dest.h = SCREEN_H;
-
 	if (SDL_FillRect(screen, &dest, 0) < 0) {
 		fprintf(stderr, "refresh() : %s\n", SDL_GetError());
 		exit(1);
@@ -79,21 +85,71 @@ void refresh() {
 }
 
 void draw_all() {
+	refresh();
 	draw_all_aliens();
 	draw_score();
-	if (SDL_Flip(screen) < 0) {
-		fprintf(stderr, "draw_all() | SDL_Flip : %s\n", SDL_GetError());
-	}
 }
 
-int main() {
-	srand(time(NULL));
-	init_all();
+Uint32 up_level(Uint32 interval, void *param) {
+	COMPLEXITY += 1;
+	fprintf(stderr, "UP LEVEL!\n");
+	return (interval);
+}
+
+void reset_all() {
+	SCORE = 0;
+	COMPLEXITY = 1;
+	pokemons_count = 0;
+}
+
+int wait_enter() {
+	SDL_Event event;
+	while (1) {
+		SDL_WaitEvent(&event);
+		SDL_PollEvent(&event);
+		switch (event.type) {
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+					case 13: // SDLK_KP_ENTER -- on linux doesn't work!(code 10)
+						return 1;
+					case SDLK_ESCAPE:
+						return 0;
+					default:
+						break;
+				}
+				break;
+			case SDL_QUIT:
+				return 1;
+			default:
+				break;
+		}
+	}
+	return 0;
+}
+
+SDL_TimerID score_timer_id;
+
+void start_game() {
+	reset_all();
+	// ship's start
+	refresh();
+	ship = create_alien(SHIP, 437, 600);
+	score_timer_id = SDL_AddTimer(5000, up_level, NULL);
+	draw_all();
+	screen_flip();
+}
+
+void finish_game() {
+	SDL_RemoveTimer(score_timer_id);
+	draw_game_over();
+	screen_flip();		
+}
+
+int game() {
 	int done = 0;
 	
-	// ship's start
-	ship = create_alien(SHIP, 437, 600);
-		
+	start_game();
+
 	while (!done) {
 		SDL_Event event;
 		if (SDL_PollEvent(&event)) {
@@ -107,6 +163,9 @@ int main() {
 						case SDLK_RIGHT:
 							ship.x_acc = X_ACCELERATION;
 							ship.x_vel = 0;
+							break;
+						case SDLK_ESCAPE:
+							done = 1;
 							break;
 						default:
 							break;
@@ -131,17 +190,32 @@ int main() {
 					break;
 			}
 		}
-		refresh();
 		draw_all();
 		if (check_collisions_with_pokemons()) {
-			fprintf(stderr, "YOU DON'T WIN!\n");
-			SDL_Delay(300);
-			exit(1);
+			finish_game();
+			return wait_enter();
 		}
 		clean_pokemons();
 		if (pokemons_count < COMPLEXITY && rand() < 10000000 * COMPLEXITY)
 			generate_pokemon();
+		screen_flip();
 		SDL_Delay(9);
 	}
+	finish_game();
+	return 0;
+}
+
+int start_screen() {
+	refresh();
+	draw_start_message();
+	screen_flip();
+	return wait_enter();;
+}
+
+int main() {
+	srand(time(NULL));
+	init_all();
+	if (start_screen())
+		while (game());
 	return 0;
 }
