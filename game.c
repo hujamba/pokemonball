@@ -18,7 +18,7 @@ const int SCREEN_H = 768;
 const int X_ACCELERATION = 1;
 const int Y_ACCELERATION = 1;
 
-int COMPLEXITY = 5;
+int COMPLEXITY = 4;
 
 extern alien ship;
 extern int pokemons_count;
@@ -36,7 +36,7 @@ void init_alien_surfaces() {
 	aliens[SHIP] = img;
 
 	// pokemon
-	img = SDL_LoadBMP("img/pokemon.bmp");
+	img = SDL_LoadBMP("img/yellow_pokemon.bmp");
 	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
 	aliens[POKEMON] = img;
 }
@@ -126,7 +126,7 @@ int main() {
 			exit(1);
 		}
 		clean_pokemons();
-		if (pokemons_count < COMPLEXITY && rand() < 80000000)
+		if (pokemons_count < COMPLEXITY && rand() < 10000000 * COMPLEXITY)
 			generate_pokemon();
 		SDL_Delay(9);
 	}

@@ -30,6 +30,10 @@ alien create_alien(int type, int x, int y) {
 	a.x_vel = a.y_vel = 0;
 	a.x_acc = a.y_acc = 0;
 	a.r = (aliens[type]->h + aliens[type]->w) / 4;
+	if (type == POKEMON)
+		a.r = 45;
+	if (type == SHIP)
+		a.r = 50;
 	return a;
 }
 
