@@ -16,12 +16,26 @@ extern int SCORE;
 alien ship, pokemons[MAX_POKEMONS];
 int pokemons_count;
 
-int MIN_VEL_X[2] = { -10, -5 };
-int MAX_VEL_X[2] = { 10, 5 };
+int MIN_VEL_X[2] = { -13, -5 };
+int MAX_VEL_X[2] = { 13, 5 };
 
 int MIN_VEL_Y[2] = { -15, -9 };
 int MAX_VEL_Y[2] = { 15, 9 };
 
+// only surfaces
+void init_alien_surfaces() {
+	SDL_Surface *img;
+	
+	// ship
+	img = SDL_LoadBMP("img/ship.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 0, 0, 0));
+	aliens[SHIP] = img;
+
+	// pokemon
+	img = SDL_LoadBMP("img/yellow_pokemon.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
+	aliens[POKEMON] = img;
+}
 
 alien create_alien(int type, int x, int y) {
 	alien a;

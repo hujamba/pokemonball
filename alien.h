@@ -14,6 +14,8 @@ typedef struct _alien {
 	int r;            // radius
 } alien;
 
+void init_alien_surfaces();
+
 alien create_alien(int type, int x, int y);
 
 void draw_alien(alien *a);

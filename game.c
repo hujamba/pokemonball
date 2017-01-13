@@ -29,20 +29,6 @@ extern int pokemons_count;
 SDL_Surface *screen = NULL;
 SDL_Surface *aliens[2] = { NULL, NULL };
 
-void init_alien_surfaces() {
-	SDL_Surface *img;
-	
-	// ship
-	img = SDL_LoadBMP("img/ship.bmp");
-	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 0, 0, 0));
-	aliens[SHIP] = img;
-
-	// pokemon
-	img = SDL_LoadBMP("img/yellow_pokemon.bmp");
-	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
-	aliens[POKEMON] = img;
-}
-
 void init_all() {
 	// Initialize SDL 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -131,6 +117,7 @@ SDL_TimerID score_timer_id;
 
 void start_game() {
 	reset_all();
+
 	// ship's start
 	refresh();
 	ship = create_alien(SHIP, 437, 600);
@@ -199,7 +186,7 @@ int game() {
 		if (pokemons_count < COMPLEXITY && rand() < 10000000 * COMPLEXITY)
 			generate_pokemon();
 		screen_flip();
-		SDL_Delay(9);
+		SDL_Delay(8);
 	}
 	finish_game();
 	return 0;
