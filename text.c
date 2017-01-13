@@ -2,6 +2,7 @@
 #include "SDL_ttf.h"
 
 extern SDL_Surface *screen;
+extern int COMPLEXITY;
 extern int SCORE;
 
 char str[100];
@@ -36,4 +37,17 @@ void draw_score() {
 	write_text(830, 0, "SCORE", 40, 255, 0, 0);
 	sprintf(str, "%05d", SCORE);
 	write_text(830, 30, str, 40, 244, 244, 0);
+	
+	write_text(830, 70, "LEVEL", 40, 255, 0, 0);
+	sprintf(str, "%d", COMPLEXITY);
+	write_text(830, 100, str, 40, 244, 244, 0);
+}
+
+void draw_start_message() {
+	write_text(330, 320, "Press Enter", 42, 244, 244, 0);
+	write_text(250, 350, "to start the game!", 42, 244, 244, 0);
+}
+
+void draw_game_over() {
+	write_text(250, 370, "GAME OVER!", 72, 244, 244, 0);
 }
