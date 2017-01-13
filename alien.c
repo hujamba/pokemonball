@@ -11,6 +11,7 @@ extern const int SCREEN_W;
 extern const int SCREEN_H;
 
 extern int COMPLEXITY;
+extern int SCORE;
 
 alien ship, pokemons[MAX_POKEMONS];
 int pokemons_count;
@@ -107,12 +108,9 @@ void draw_aliens(alien *a, int cnt) {
 	}
 }
 
-void draw_all() {
+void draw_all_aliens() {
 	draw_alien(&ship);
 	draw_aliens(pokemons, pokemons_count);
-	if (SDL_Flip(screen) < 0) {
-		fprintf(stderr, "draw_all() | SDL_Flip : %s\n", SDL_GetError());
-	}
 }
 
 // check collision
@@ -148,6 +146,7 @@ void delete_pokemon(int id) {
 	fprintf(stderr, "pokemons : %d\n", pokemons_count);
 	pokemons_count--;
 	swap_aliens(&pokemons[id], &pokemons[pokemons_count]);
+	SCORE += COMPLEXITY;
 }
 
 void clean_pokemons() {

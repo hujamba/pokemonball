@@ -9,6 +9,7 @@
 
 #include "SDL.h"
 #include "alien.h"
+#include "text.h"
 
 // window settings
 const int SCREEN_W = 1024;
@@ -19,6 +20,7 @@ const int X_ACCELERATION = 1;
 const int Y_ACCELERATION = 1;
 
 int COMPLEXITY = 4;
+int SCORE = 0;
 
 extern alien ship;
 extern int pokemons_count;
@@ -57,7 +59,10 @@ void init_all() {
 			SCREEN_W, SCREEN_H, SDL_GetError());
 		exit(2);
 	}
-	SDL_WM_SetCaption("Pokemon Ball", NULL); 
+	SDL_WM_SetCaption("Pokemon Ball", NULL);
+
+	init_fonts();
+
 	init_alien_surfaces();
 }
 
@@ -73,6 +78,14 @@ void refresh() {
 	}
 }
 
+void draw_all() {
+	draw_all_aliens();
+	draw_score();
+	if (SDL_Flip(screen) < 0) {
+		fprintf(stderr, "draw_all() | SDL_Flip : %s\n", SDL_GetError());
+	}
+}
+
 int main() {
 	srand(time(NULL));
 	init_all();
@@ -80,7 +93,7 @@ int main() {
 	
 	// ship's start
 	ship = create_alien(SHIP, 437, 600);
-
+		
 	while (!done) {
 		SDL_Event event;
 		if (SDL_PollEvent(&event)) {

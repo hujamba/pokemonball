@@ -24,7 +24,7 @@ void update_alien(alien *a);
 
 void draw_aliens(alien *a, int cnt);
 
-void draw_all();
+void draw_all_aliens();
 
 void swap_aliens(alien *a, alien *b);
 
