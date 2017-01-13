@@ -27,7 +27,28 @@ extern int pokemons_count;
 
 // Surfaces 
 SDL_Surface *screen = NULL;
+SDL_Surface *heart = NULL;
 SDL_Surface *aliens[2] = { NULL, NULL };
+
+// only surfaces
+void init_surfaces() {
+	SDL_Surface *img;
+	
+	// ship
+	img = SDL_LoadBMP("img/ship.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 0, 0, 0));
+	aliens[SHIP] = img;
+
+	// pokemon
+	img = SDL_LoadBMP("img/yellow_pokemon.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
+	aliens[POKEMON] = img;
+
+	// heart
+	img = SDL_LoadBMP("img/heart.bmp");
+	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
+	heart = img;
+}
 
 void init_all() {
 	// Initialize SDL 
@@ -49,7 +70,7 @@ void init_all() {
 
 	init_fonts();
 
-	init_alien_surfaces();
+	init_surfaces();
 }
 
 void screen_flip() {
@@ -74,6 +95,7 @@ void draw_all() {
 	refresh();
 	draw_all_aliens();
 	draw_score();
+	draw_lives();
 }
 
 Uint32 up_level(Uint32 interval, void *param) {
@@ -137,6 +159,8 @@ int game() {
 	
 	start_game();
 
+	fprintf(stderr, "%d\n", ship.lives);
+
 	while (!done) {
 		SDL_Event event;
 		if (SDL_PollEvent(&event)) {
@@ -177,8 +201,9 @@ int game() {
 					break;
 			}
 		}
+		check_collisions_with_pokemons();
 		draw_all();
-		if (check_collisions_with_pokemons()) {
+		if (is_dead(&ship)) {
 			finish_game();
 			return wait_enter();
 		}

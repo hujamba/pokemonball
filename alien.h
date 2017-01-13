@@ -12,9 +12,8 @@ typedef struct _alien {
 	int x_vel, y_vel; // velocity
 	int x_acc, y_acc; // acceleration
 	int r;            // radius
+	int lives;        // number of lives
 } alien;
-
-void init_alien_surfaces();
 
 alien create_alien(int type, int x, int y);
 
@@ -28,12 +27,16 @@ void draw_aliens(alien *a, int cnt);
 
 void draw_all_aliens();
 
+void draw_lives();
+
 void swap_aliens(alien *a, alien *b);
+
+int is_dead(alien *a);
 
 /*
  * Pokemons!
  */
-int check_collisions_with_pokemons();
+void check_collisions_with_pokemons();
 
 void delete_pokemon(int id);
 

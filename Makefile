@@ -8,7 +8,7 @@ game.o: game.c alien.h
 	gcc -c -Wall -Wextra game.c `pkg-config --cflags sdl`
 
 helpers.o: helpers.c 
-	gcc -c -Wall -Wextra helpers.c
+	gcc -c -Wall -Wextra helpers.c `pkg-config --cflags sdl`
 
 text.o: text.c
 	gcc -c -Wall -Wextra text.c `pkg-config --cflags sdl SDL_ttf`

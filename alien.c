@@ -5,6 +5,7 @@
 #define MAX_POKEMONS 255
 
 extern SDL_Surface *screen;
+extern SDL_Surface *heart;
 extern SDL_Surface *aliens[2];
 
 extern const int SCREEN_W;
@@ -22,20 +23,8 @@ int MAX_VEL_X[2] = { 13, 5 };
 int MIN_VEL_Y[2] = { -15, -9 };
 int MAX_VEL_Y[2] = { 15, 9 };
 
-// only surfaces
-void init_alien_surfaces() {
-	SDL_Surface *img;
-	
-	// ship
-	img = SDL_LoadBMP("img/ship.bmp");
-	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 0, 0, 0));
-	aliens[SHIP] = img;
-
-	// pokemon
-	img = SDL_LoadBMP("img/yellow_pokemon.bmp");
-	SDL_SetColorKey(img, SDL_SRCCOLORKEY, SDL_MapRGB(img->format, 255, 255, 255));
-	aliens[POKEMON] = img;
-}
+int LIVES[2] = { 3, 1 };
+int RADIUSES[2] = { 50, 45 };
 
 alien create_alien(int type, int x, int y) {
 	alien a;
@@ -44,11 +33,8 @@ alien create_alien(int type, int x, int y) {
 	a.y = y;
 	a.x_vel = a.y_vel = 0;
 	a.x_acc = a.y_acc = 0;
-	a.r = (aliens[type]->h + aliens[type]->w) / 4;
-	if (type == POKEMON)
-		a.r = 45;
-	if (type == SHIP)
-		a.r = 50;
+	a.r = RADIUSES[type];
+	a.lives = LIVES[type];
 	return a;
 }
 
@@ -100,20 +86,8 @@ void update_alien(alien *a) {
 }
 
 void draw_alien(alien *a) {
-	SDL_Rect src, dest;
-
 	update_alien(a);
-
-	src.x = src.y = 0;
-	src.w = aliens[a->type]->w, src.h = aliens[a->type]->h;
-
-	dest.x = a->x, dest.y = a->y;
-	dest.w = aliens[a->type]->w, dest.h = aliens[a->type]->h;
-
-	if (SDL_BlitSurface(aliens[a->type], &src, screen, &dest)) {
-		fprintf(stderr, "draw_alien() : %s\n", SDL_GetError());
-		exit(1);
-	}
+	draw_surface(aliens[a->type], a->x, a->y);
 }
 
 void draw_aliens(alien *a, int cnt) {
@@ -148,39 +122,42 @@ void swap_aliens(alien *a, alien *b) {
 	*b = c;
 }
 
-int check_collisions_with_pokemons() {
-	for (int i = 0; i < pokemons_count; i++) {
-		if (has_collided(&ship, &pokemons[i]))
-			return 1;
-	}
-	return 0;
-}
-
-void delete_pokemon(int id) {
-	fprintf(stderr, "pokemons : %d\n", pokemons_count);
-	pokemons_count--;
-	swap_aliens(&pokemons[id], &pokemons[pokemons_count]);
-	SCORE += COMPLEXITY;
-}
-
 void clean_pokemons() {
 	int i;
 	for (i = 0; i < pokemons_count;) {
 		if (pokemons[i].y > SCREEN_H 
 			|| pokemons[i].x > SCREEN_W
 			|| pokemons[i].y < -aliens[POKEMON]->h 
-			|| pokemons[i].x < -aliens[POKEMON]->w)
+			|| pokemons[i].x < -aliens[POKEMON]->w
+			|| is_dead(&pokemons[i]))
 			delete_pokemon(i);
 		else
 			i++;
 	}
 }
 
+void check_collisions_with_pokemons() {
+	for (int i = 0; i < pokemons_count; i++) {
+		if (has_collided(&ship, &pokemons[i])) {
+			pokemons[i].lives--;
+			ship.lives--;
+		}
+	}
+}
+
+void delete_pokemon(int id) {
+	fprintf(stderr, "pokemons : %d\n", pokemons_count);
+	
+	pokemons_count--;
+	swap_aliens(&pokemons[id], &pokemons[pokemons_count]);
+	
+	SCORE += COMPLEXITY;
+}
+
 void generate_pokemon() {
 	alien p = create_alien(POKEMON, rand() % (SCREEN_W - aliens[POKEMON]->w), 0);
 	p.y_acc = (rand() & 1) + 1;
 	p.y_vel = 1;
-	//p.x_vel = rand() % 5 - 2;
 	pokemons[pokemons_count] = p;
 	pokemons_count++;
 }
@@ -188,4 +165,13 @@ void generate_pokemon() {
 void generate_pokemons(int add) {
 	while (add-- && pokemons_count < MAX_POKEMONS)
 		generate_pokemon();
+}
+
+void draw_lives() {
+	for (int i = 0; i < ship.lives; i++)
+		draw_surface(heart, 900 + 30 * i, 730);
+}
+
+int is_dead(alien *a) {
+	return a->lives <= 0;
 }
